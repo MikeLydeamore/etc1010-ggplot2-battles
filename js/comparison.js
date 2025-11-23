@@ -204,6 +204,7 @@ function handleRunButtonClick() {
             analyzeDifferences(diffCtx);
           }
         };
+        console.log("hello");
         diffImg.src = data.getImageDataUrl();
       } else {
         console.log("Diff image not available");

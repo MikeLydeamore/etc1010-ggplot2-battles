@@ -10,10 +10,14 @@ library(ozmaps)
 
 aus_map <- ozmaps::ozmap_data("states")
 aus_map$NAME <- as.factor(aus_map$NAME)
+aus_map_tmp <- aus_map
+aus_map_tmp$opacity <- factor(ifelse(aus_map_tmp$NAME == "Tasmania", 0, 1))
 
-p <- ggplot(aus_map) + geom_sf(aes(fill = NAME), data = aus_map |> filter(NAME != "Tasmania")) + 
+p <-ggplot(aus_map_tmp) + geom_sf(aes(fill = NAME, alpha = opacity, colour=opacity)) + 
     theme_void() +
     scale_fill_viridis_d(drop = FALSE) +
+    scale_colour_manual(values = c("0" = "white", "1" = "black"), guide = "none") +
+    scale_alpha_manual(values = c("0" = 0, "1" = 1), guide = "none") +
     labs(fill = "State")
 
 print(p)
