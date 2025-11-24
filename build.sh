@@ -10,11 +10,19 @@ for file in "$CODE_DIR"/*.R; do
   # Get the filename without extension
   filename=$(basename "$file" .R)
 
+  # Extract the title from the hashpipe (format: #| title: "Title here")
+  title=$(grep -m 1 '^#| title:' "$file" | sed 's/^#| title: "\(.*\)"$/\1/')
+  
+  # Use filename as fallback if no title found
+  if [ -z "$title" ]; then
+    title="$filename"
+  fi
+
   # Create a matching subfolder in challenges/
   mkdir -p "$TARGET_DIR/$filename"
 
-  # Copy the template file into it as index.html
-  cp "$TEMPLATE" "$TARGET_DIR/$filename/index.html"
+  # Copy the template file and replace the title
+  sed "s|<title></title>|<title>$title - ggplot Battles</title>|" "$TEMPLATE" > "$TARGET_DIR/$filename/index.html"
 done
 
 Rscript printer.R
