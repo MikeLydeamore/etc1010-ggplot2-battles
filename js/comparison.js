@@ -12,9 +12,6 @@ function initializeDOMReferences() {
   result = document.getElementById('result');
 }
 
-// Try to initialize immediately, but also set up for later if elements don't exist yet
-initializeDOMReferences();
-
 // Create diff canvas (hidden by default)
 const diffCanvas = document.createElement('canvas');
 diffCanvas.id = 'diff-canvas';
@@ -33,45 +30,17 @@ diffCanvas.style.cssText = `
 // Store diff image data
 let diffImageData = null;
 
-// Initialize diff functionality
-setTimeout(() => {
-  // Re-initialize DOM references in case they're now available
-  initializeDOMReferences();
-
-  // Add diff canvas to the slider container
-  const sliderContainer = document.getElementById('sliderContainer');
-  if (sliderContainer) {
-    sliderContainer.style.position = 'relative';
-    sliderContainer.appendChild(diffCanvas);
-  }
-
-  // Set up checkbox event handler
-  const checkbox = document.getElementById('show-diff');
-  if (checkbox) {
-    checkbox.disabled = true;
-    checkbox.addEventListener('change', function () {
-      // Re-initialize in case canvas references are stale
-      if (!canvas) initializeDOMReferences();
-
-      if (this.checked && diffImageData && canvas) {
-        // Show diff canvas
-        canvas.style.display = 'none';
-        diffCanvas.style.display = 'block';
-      } else if (canvas) {
-        // Show original canvas
-        canvas.style.display = 'block';
-        diffCanvas.style.display = 'none';
-      }
-    });
-  }
-}, 100);
-
 // Setup canvas and slider functionality when elements are available
 function setupCanvasAndSlider() {
+  // Initialize DOM references now that elements exist
+  initializeDOMReferences();
+
   if (!canvas || !ctx || !container || !slider) {
-    initializeDOMReferences();
+    console.error("Canvas elements not found during setup");
+    return;
   }
 
+  // Set up canvas
   if (canvas && ctx) {
     ctx.fillStyle = 'rgba(44,47,51,1)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -80,6 +49,13 @@ function setupCanvasAndSlider() {
     //ctx.fillText('No plot', 450, 200);
   }
 
+  // Add diff canvas to the slider container
+  if (container) {
+    container.style.position = 'relative';
+    container.appendChild(diffCanvas);
+  }
+
+  // Set up slider functionality
   if (container && slider) {
     let isDragging = false;
     slider.addEventListener('mousedown', () => isDragging = true);
@@ -93,10 +69,29 @@ function setupCanvasAndSlider() {
     // Initial clip
     updateClip(300);
   }
+
+  // Set up checkbox event handler
+  const checkbox = document.getElementById('show-diff');
+  if (checkbox) {
+    checkbox.disabled = true;
+    checkbox.addEventListener('change', function () {
+      if (this.checked && diffImageData && canvas) {
+        // Show diff canvas
+        canvas.style.display = 'none';
+        diffCanvas.style.display = 'block';
+      } else if (canvas) {
+        // Show original canvas
+        canvas.style.display = 'block';
+        diffCanvas.style.display = 'none';
+      }
+    });
+  }
 }
 
-// Call setup after a delay to ensure DOM is ready
-setTimeout(setupCanvasAndSlider, 200);
+// Wait for editor-ready event before setting up canvas and slider
+document.addEventListener('editor-ready', () => {
+  setupCanvasAndSlider();
+});
 
 function updateClip(x) {
   if (!canvas || !slider) return;
@@ -107,11 +102,6 @@ function updateClip(x) {
 
 // Compare button
 function handleRunButtonClick() {
-  // Re-initialize DOM references in case they weren't available before
-  if (!canvas || !baseImage) {
-    initializeDOMReferences();
-  }
-
   // Check if we have the required elements
   if (!canvas || !baseImage) {
     console.error("Canvas elements not found");
