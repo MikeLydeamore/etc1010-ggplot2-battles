@@ -5,6 +5,11 @@
     "image": ["australia.png"]
   },
   {
+    "name": ["australian_maths_uptake"],
+    "title": ["Australian Mathematics Uptake"],
+    "image": ["australian_maths_uptake.png"]
+  },
+  {
     "name": ["basic_penguins_2"],
     "title": ["Penguin Distributions"],
     "image": ["basic_penguins_2.png"]
