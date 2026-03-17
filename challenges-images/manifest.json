@@ -1,22 +1,50 @@
 [
   {
+    "name": ["barcharts-1"],
+    "title": ["Bar charts (`geom_bar()`)"],
+    "category": ["Part 2: Bar Charts and Summaries"],
+    "image": ["barcharts-1.png"]
+  },
+  {
+    "name": ["barcharts-2"],
+    "title": ["Bar charts with fill colour"],
+    "category": ["Part 2: Bar Charts and Summaries"],
+    "image": ["barcharts-2.png"]
+  },
+  {
+    "name": ["barcharts-3"],
+    "title": ["Bar positions"],
+    "category": ["Part 2: Bar Charts and Summaries"],
+    "image": ["barcharts-3.png"]
+  },
+  {
+    "name": ["barcharts-4"],
+    "title": ["Pre-summarised charts with `geom_col()`"],
+    "category": ["Part 2: Bar Charts and Summaries"],
+    "image": ["barcharts-4.png"]
+  },
+  {
     "name": ["scatterplots-1"],
-    "title": ["Scatterplots: Part 1"],
+    "title": ["The ggplot canvas and points"],
+    "category": ["Part 1: Scatterplots and Aesthetics"],
     "image": ["scatterplots-1.png"]
   },
   {
     "name": ["scatterplots-2"],
-    "title": ["Scatterplots: Part 2"],
+    "title": ["Mapping colour and transparency"],
+    "category": ["Part 1: Scatterplots and Aesthetics"],
     "image": ["scatterplots-2.png"]
   },
   {
     "name": ["scatterplots-3"],
-    "title": ["Scatterplots: Part 3"],
+    "title": ["Adding labels with `labs()`"],
+    "category": ["Part 1: Scatterplots and Aesthetics"],
     "image": ["scatterplots-3.png"]
   },
   {
     "name": ["scatterplots-4"],
-    "title": ["Scatterplots: Part 4"],
+    "title": ["The Golden Rule of Regression"],
+    "category": ["Part 1: Scatterplots and Aesthetics"],
     "image": ["scatterplots-4.png"]
   }
 ]

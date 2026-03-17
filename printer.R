@@ -22,6 +22,14 @@ for (fname in files) {
     name # fallback to filename if no title
   }
 
+  # Extract category from hashpipe comment
+  category_line <- grep("^#\\|\\s*category\\s*:", file_content, value = TRUE)
+  battle_category <- if (length(category_line) > 0) {
+    sub("^#\\|\\s*category\\s*:\\s*[\"']([^\"']+)[\"'].*$", "\\1", category_line[1])
+  } else {
+    "Uncategorised"
+  }
+
   if (length(plot_var_line) > 0) {
     # Extract the variable name using regex
     plot_var <- sub("^#\\|\\s*plot-variable\\s*:\\s*[\"']([^\"']+)[\"'].*$", "\\1", plot_var_line[1])
@@ -40,6 +48,7 @@ for (fname in files) {
   battles[[length(battles) + 1]] <- list(
     name = name,
     title = battle_title,
+    category = battle_category,
     image = paste0(name, ".png")
   )
 }
