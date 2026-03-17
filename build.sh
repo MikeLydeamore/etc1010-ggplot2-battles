@@ -22,7 +22,7 @@ for file in "$CODE_DIR"/*.R; do
   mkdir -p "$TARGET_DIR/$filename"
 
   # Copy the template file and replace the title
-  sed "s|<title></title>|<title>$title - ggplot Battles</title>|" "$TEMPLATE" > "$TARGET_DIR/$filename/index.html"
+  sed "s|<title></title>|<title>${title} - ggplot Battles</title>|" "${TEMPLATE}" > "${TARGET_DIR}/${filename}/index.html"
 done
 
 Rscript printer.R

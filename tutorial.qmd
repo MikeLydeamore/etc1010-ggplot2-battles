@@ -1,0 +1,392 @@
+---
+title: "Week 4 Tutorial"
+subtitle: "Visualisation via Grammar of Graphics"
+format: 
+  html:
+    toc: true
+    toc-depth: 3
+    theme: default
+    embed-resources: true
+editor: source
+---
+
+## 🎯 Objectives & Structure
+
+Welcome to the Week 4 tutorial. Today, we focus on translating your theoretical knowledge of the **Grammar of Graphics** into applied R code using `ggplot2`.
+
+### Question Categories
+1. **[CORE]:** The absolute minimum expected knowledge required to pass. These are mandatory in-class questions that build your foundation.
+2. **[RECOMMENDED]:** Reinforcing questions for extra practice before or after class. The majority of questions fall into this tier.
+3. **[EXTENSION]:** Challenging questions aimed at mastery.
+
+```{r}
+#| label: setup
+#| include: false
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+library(tidyverse)
+library(lubridate)
+```
+
+---
+
+## Part 1: Scatterplots and Aesthetics
+
+### Question 1: The `ggplot()` canvas and points [CORE]
+
+We will use the built-in `diamonds` dataset, which contains price and quality attributes for over 50,000 round-cut diamonds.
+
+**Step 1:** Create a scatterplot with `carat` on the x-axis and `price` on the y-axis.
+
+```{r}
+#| eval: false
+#| label: q1-plot
+ggplot(diamonds, aes(x = ___, y = ___)) +
+  ___()
+```
+
+**Step 2:** Local Interpretation. What does the plot reveal about the relationship between carat size and price? Why might diamond prices grow non-linearly with respect to carat size?
+
+---
+
+### Question 2: Mapping colour and transparency [CORE]
+
+**Step 1:** Copy your code from Question 1. Map the `cut` variable to the `colour` aesthetic. Also, set the `alpha` (transparency) of the points to `0.3` outside of the `aes()` function to handle the severe overplotting.
+
+```{r}
+#| eval: false
+#| label: q2-plot
+ggplot(diamonds, aes(x = carat, y = price, ___ = ___)) +
+  geom_point(___ = ___)
+```
+
+**Step 2:** Local Interpretation. Comment on any interesting patterns you see. Does a better cut consistently mean a higher price for a given carat size?
+
+---
+
+### Question 3: Adding labels with `labs()` [RECOMMENDED]
+
+Take your plot from Question 2 and add human-readable labels for the title, x-axis, y-axis, and legend.
+
+```{r}
+#| eval: false
+#| label: q3-plot
+ggplot(diamonds, aes(x = carat, y = price, colour = cut)) +
+  geom_point(alpha = 0.3) +
+  ___(
+    title = "___",
+    x = "___",
+    y = "___",
+    colour = "___"
+  )
+```
+
+---
+
+### Question 4: The Golden Rule of Regression [CORE]
+
+**Step 1:** Using `geom_smooth()`, overlay a linear regression line (`method = "lm"`) onto the basic scatterplot of `carat` vs `price`. You can drop the `colour = cut` mapping for this plot to make it simpler.
+
+```{r}
+#| eval: false
+#| label: q4-plot
+ggplot(diamonds, aes(x = carat, y = price)) +
+  geom_point(alpha = 0.1) +
+  ___(method = "___", se = TRUE)
+```
+
+**Step 2:** Local Interpretation. Based on the plot, does a linear model (a straight line) seem appropriate for predicting price from carat size across the entire range of carats? Why or why not?
+
+---
+
+*AI Pedagogy Module*
+
+### Question 5: AI Prompt-Design: Overplotting [RECOMMENDED]
+
+**Step 1:** You have hand-coded solutions to handle overplotting using `alpha = 0.3` and building aesthetic mappings. 
+
+**Step 2:** Design a prompt to ask an AI (e.g., ChatGPT, Claude) to build a similar graph. E.g., *"Write ggplot2 code to scatterplot price against carat for the diamonds dataset. Make sure you handle the severe overplotting using transparency, and colour the points by cut."*
+
+**Step 3:** Compare your hand-coded solution with the AI output. Is it different? Did the AI choose a different `alpha` value? Did it suggest a different geometry, such as `geom_hex()`?
+
+---
+
+## Part 2: Bar Charts and Summaries
+
+### Question 6: Bar charts (`geom_bar()`) [RECOMMENDED]
+
+**Step 1:** Create a simple bar chart showing the frequency of diamonds for each `clarity` level. Use `geom_bar()` so ggplot counts the categories for you.
+
+```{r}
+#| eval: false
+#| label: q6-plot
+ggplot(diamonds, aes(x = ___)) +
+  ___()
+```
+
+**Step 2:** Local Interpretation. Which clarity level is the most common? Which is the rarest?
+
+---
+
+### Question 7: Bar charts with fill colour [RECOMMENDED]
+
+Modify your plot from Question 6 to map the `cut` variable to the interior colour of the bars. Note: Ensure you use the correct aesthetic (it is not `colour`).
+
+```{r}
+#| eval: false
+#| label: q7-plot
+ggplot(___, aes(x = ___, ___ = ___)) +
+  geom_bar()
+```
+
+---
+
+### Question 8: Bar positions [RECOMMENDED]
+
+**Step 1:** Modify the stacked bar plot from Question 7 to place the `cut` categories side-by-side.
+
+```{r}
+#| eval: false
+#| label: q8-plot-dodge
+ggplot(diamonds, aes(x = clarity, fill = cut)) +
+  geom_bar(position = "___")
+```
+
+**Step 2:** Now modify the plot to show 100% stacked proportions using `position = "fill"`. Make sure to update the y-axis label since it no longer represents raw counts.
+
+```{r}
+#| eval: false
+#| label: q8-plot-fill
+ggplot(diamonds, aes(x = clarity, fill = cut)) +
+  geom_bar(position = "___") +
+  labs(y = "___")
+```
+
+**Step 3:** Local Interpretation. Comparing the plots, do diamonds with lower clarity (like `I1`) have a different proportion of "Ideal" cuts compared to diamonds with exceptionally high clarity (like `IF`)? 
+
+---
+
+### Question 9: Pre-summarised charts with `geom_col()` [RECOMMENDED]
+
+Instead of letting ggplot count the rows automatically, we will explicitly summarise the data first using `dplyr`.
+
+**Step 1:** Use `group_by()` and `summarise()` to calculate the **mean price** for each `cut` of diamond. Assign this to a new variable called `cut_prices`.
+**Step 2:** Plot `cut_prices` using `geom_col()`.
+
+```{r}
+#| eval: false
+#| label: q9-plot
+cut_prices <- diamonds %>%
+  group_by(___) %>%
+  summarise(mean_price = ___(___), .groups = "drop")
+
+ggplot(___, aes(x = ___, y = ___)) +
+  ___()
+```
+
+**Step 3:** Local Interpretation. Look at the plot. Is there anything surprising about the average price of "Ideal" cut diamonds compared to "Fair" cut diamonds? Why might this be? *(Hint: think about what other variable might be confounding this relationship)*
+
+---
+
+*AI Pedagogy Module*
+
+### Question 10: AI Debugging: The Syntax Switch [RECOMMENDED]
+
+I asked an AI to create a dodged bar chart of diamond clarity coloured by cut, incorporating a title. Here is the code it returned, but it throws an error in R.
+
+```r
+diamonds %>%
+  ggplot(aes(x = clarity, color = cut)) %>%
+  geom_col(position = "dodge") %>%
+  labs(title = "Clarity by Cut")
+```
+
+**Step 1:** Identify every bug in the AI's code.
+**Step 2:** Fix the code below so it runs correctly.
+**Step 3:** Explain briefly why the AI's logic was flawed.
+
+```{r}
+#| eval: false
+#| label: q10-debug-solution
+# Fix the AI's code here
+```
+
+---
+
+## Part 3: Distributions
+
+### Question 11: Distributions via Histograms [CORE]
+
+**Step 1:** Create a histogram of `carat` from the diamonds dataset. Set the `binwidth` to a sensible value (e.g., `0.05`).
+
+```{r}
+#| eval: false
+#| label: q11-plot
+ggplot(diamonds, aes(x = ___)) +
+  ___(binwidth = ___, fill = "steelblue", colour = "black")
+```
+
+**Step 2:** Local Interpretation. Comment on the most interesting feature of this distribution. Notice where the distinct spikes occur. Why would diamond carats not be distributed in a perfectly smooth curve?
+
+---
+
+### Question 12: Overlapping histograms [RECOMMENDED]
+
+**Step 1:** Modify the histogram to map `cut` to the `fill` aesthetic. Set `alpha = 0.5` and `position = "identity"`. 
+
+```{r}
+#| eval: false
+#| label: q12-plot
+ggplot(diamonds, aes(x = carat, ___ = ___)) +
+  geom_histogram(binwidth = 0.05, alpha = ___, position = "___")
+```
+
+**Step 2:** Does this plot successfully and clearly compare the distribution of the various cuts? Why or why not?
+
+---
+
+### Question 13: Comparing distributions with Boxplots [CORE]
+
+**Step 1:** To robustly solve the overlapping problem in Question 12, use a boxplot to cleanly compare the distribution of `carat` across the different `cut` categories.
+
+```{r}
+#| eval: false
+#| label: q13-plot
+ggplot(diamonds, aes(x = ___, y = ___, fill = cut)) +
+  ___()
+```
+
+**Step 2:** Does this boxplot confirm your hypothesis from Question 9 regarding why "Fair" diamonds are more expensive on average?
+
+---
+
+### Question 14: Small multiples with `facet_wrap()` [RECOMMENDED]
+
+We will switch to the `mpg` dataset (fuel economy data for popular car models).
+
+**Step 1:** Create a scatterplot of `displ` (engine displacement in litres) on the x-axis vs `hwy` (highway miles per gallon) on the y-axis. 
+**Step 2:** Use `facet_wrap()` to violently split this plot into small multiples based on the `class` of the vehicle (e.g., compact, minivan, suv).
+
+```{r}
+#| eval: false
+#| label: q14-plot
+ggplot(mpg, aes(x = ___, y = ___)) +
+  geom_point(alpha = 0.6) +
+  ___(~ ___)
+```
+
+---
+
+## Part 4: Working with Dates
+
+A modified dataset `economics_str` has been created below where the standard dates are artificially formatted as strings. Run this code chunk to create it.
+
+```{r}
+#| eval: false
+#| label: generate-econ
+economics_str <- economics %>%
+  mutate(date_string = format(date, "%d/%m/%Y")) %>%
+  select(date_string, pce, pop, psavert)
+```
+
+### Question 15: Parsing dates with `lubridate` [RECOMMENDED]
+
+**Step 1:** Using `mutate()` and the highly appropriate function from `lubridate`, convert `date_string` into a proper date column. Overwrite or create a new column named `date`. *(Hint: Carefully check the exact order of components in the string "01/07/1967")*
+
+```{r}
+#| eval: false
+#| label: q15-dates
+economics_str <- economics_str %>%
+  mutate(___ = ___(___))
+```
+
+---
+
+### Question 16: Plotting timelines [RECOMMENDED]
+
+**Step 1:** Plot a line chart (`geom_line()`) of `psavert` (the US personal savings rate) over `date` using the `economics_str` dataset you successfully parsed in Question 15.
+
+```{r}
+#| eval: false
+#| label: q16-plot
+ggplot(___, aes(x = ___, y = ___)) +
+  ___() +
+  labs(title = "Personal Savings Rate over Time",
+       x = "Year", y = "Savings Rate (%)")
+```
+
+**Step 2:** Local Interpretation. Comment on the general multi-decade trend of the personal savings rate from the late 1970s up to the 2000s.
+
+---
+
+*AI Pedagogy Module*
+
+### Question 17: AI Debugging: Date parsing [RECOMMENDED]
+
+I asked an AI to convert American-formatted dates ("Month-Day-Year") into proper date objects.
+
+```r
+us_dates <- tibble(date_col = c("12-31-2022", "01-15-2023", "07-04-2023"))
+
+us_dates %>%
+  mutate(parsed = dmy(date_col))
+```
+
+**Step 1:** Identify the fatal bug. 
+**Step 2:** Produce the correct functional code below.
+**Step 3:** Why did the AI's logic fail here?
+
+```{r}
+#| eval: false
+#| label: q17-debug-solution
+# Fix the AI's code here
+```
+
+---
+
+## Part 5: Past Exam Practice 📝
+
+### Information for Questions 18-20
+![Rose (polar area) chart showing monthly delay minutes by cause for three carriers](../Exam_2025S2/Q9-11_polar_plot.png)
+
+#### Question 18 (4 Marks) [RECOMMENDED]
+**No coding is required.** Comment on whether this chart type is appropriate for these data. Expand on your reasoning.
+
+#### Question 19 (4 Marks) [RECOMMENDED]
+**No coding is required.** Propose an alternative plot type that would be better suited to the task. Name the function/plot type (e.g., 'grouped bars with geom_col'), no code required, and detail any additional features you would consider.
+
+#### Question 20 (4 Marks) [RECOMMENDED]
+**No coding is required.** Based on your answer in Question 19 (the previous question), state two specific, data-driven insights you could potentially gather from your plot type you could recommend.
+
+---
+
+## Part 6: Extension Challenges
+
+### Question 21: The Log-Transform Workflow [EXTENSION]
+
+The diamonds dataset has heavy positive skew in price.
+**Step 1:** Create a scatterplot of `carat` vs `price`.
+**Step 2:** Wrangle the data by creating a new column called `log_price` which takes the `log()` (natural logarithm) of price.
+**Step 3:** Create a new scatterplot of `carat` vs `log_price` and overlay a `geom_smooth(method = "lm")`. Does this appear substantially more linear than the original?
+
+```{r}
+#| eval: false
+#| label: q21-log
+# Write your code here
+```
+
+
+### Question 22: End-to-end Wrangle and Visualise [EXTENSION]
+
+Pulling together Week 3 and Week 4:
+**Step 1:** Take the `diamonds` dataset.
+**Step 2:** Filter for diamonds where `carat > 1.0`.
+**Step 3:** Group by `cut` and `clarity`.
+**Step 4:** Summarise the `mean_price` and total number of diamonds (`n = n()`).
+**Step 5:** Filter out any groups that have fewer than 10 diamonds (`n >= 10`).
+**Step 6:** Pipe this resulting dataset directly into `ggplot()` and create a dodged bar chart (`geom_col()`) of `mean_price` on the y-axis, `clarity` on the x-axis, elegantly filled by `cut`.
+
+```{r}
+#| eval: false
+#| label: q22-end-to-end
+# Write your code here
+```
