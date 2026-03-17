@@ -28,16 +28,3 @@ if (list_battles_container) {
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const listBattles = document.querySelector('.list-battles');
-
-  if (listBattles) {
-    listBattles.addEventListener('wheel', (e) => {
-      // Prevent default vertical scroll
-      e.preventDefault();
-
-      // Scroll horizontally instead
-      listBattles.scrollLeft += e.deltaY;
-    });
-  }
-});
