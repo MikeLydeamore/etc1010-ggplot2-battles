@@ -1,4 +1,5 @@
 #| title: "Scatterplots: Part 3"
+#| dataset-name: "diamonds"
 #| description: "The next step in building your plot is to add human-readable labels for the title, x-axis, y-axis and legend."
 
 library(ggplot2)
