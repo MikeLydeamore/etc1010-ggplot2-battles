@@ -31,18 +31,14 @@ library(lubridate)
 
 ## Part 1: Scatterplots and Aesthetics
 
+In this part, you will use a special version of ggplot battles to help learn the grammar of graphics. After you've completed a battle, come back to these instructions for the next steps.
+
 ### Question 1: The `ggplot()` canvas and points [CORE]
 
 We will use the built-in `diamonds` dataset, which contains price and quality attributes for over 50,000 round-cut diamonds.
 
-**Step 1:** Create a scatterplot with `carat` on the x-axis and `price` on the y-axis.
+**Step 1:** You can find a link to this battle here: < https://etc1010.ggplotbattles.dev/challenges/scatterplots-1/ >
 
-```{r}
-#| eval: false
-#| label: q1-plot
-ggplot(diamonds, aes(x = ___, y = ___)) +
-  ___()
-```
 
 **Step 2:** Local Interpretation. What does the plot reveal about the relationship between carat size and price? Why might diamond prices grow non-linearly with respect to carat size?
 
@@ -50,14 +46,7 @@ ggplot(diamonds, aes(x = ___, y = ___)) +
 
 ### Question 2: Mapping colour and transparency [CORE]
 
-**Step 1:** Copy your code from Question 1. Map the `cut` variable to the `colour` aesthetic. Also, set the `alpha` (transparency) of the points to `0.3` outside of the `aes()` function to handle the severe overplotting.
-
-```{r}
-#| eval: false
-#| label: q2-plot
-ggplot(diamonds, aes(x = carat, y = price, ___ = ___)) +
-  geom_point(___ = ___)
-```
+**Step 1:** Yo ucan find a link to this battle here: < https://etc1010.ggplotbattles.dev/challenges/scatterplots-2/ >
 
 **Step 2:** Local Interpretation. Comment on any interesting patterns you see. Does a better cut consistently mean a higher price for a given carat size?
 
