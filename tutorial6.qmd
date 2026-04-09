@@ -1,0 +1,368 @@
+---
+title: "Week 5 Tutorial: EDA as an Iterative Process"
+format: 
+  html:
+    embed-resources: true
+    toc: true
+---
+
+## 🎯 Objectives
+
+Welcome to Week 5! This week, we elevate our plots from "functional" to "publication-ready". We will explore small multiples, meaningful ordering, clean themes, reference lines, and colour theory. We will also learn how to use `ggpairs()` for pre-modelling EDA.
+
+::: {.callout-note}
+**Priority Guide:**
+- **[CORE]**: Mandatory in-class questions covering the absolute essentials.
+- **[RECOMMENDED]**: Additional practice to reinforce your learning.
+- **[EXTENSION]**: Advanced challenges for those looking to push further.
+:::
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(GGally)
+library(ggrepel)
+library(forcats)
+library(RColorBrewer)
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE
+)
+
+# Set a basic clean theme
+theme_set(theme_minimal())
+
+# We will use the built-in diamonds dataset. Since it's huge (>50k rows), we'll sample it.
+set.seed(42)
+diamonds_sample <- diamonds %>% sample_n(1000)
+```
+
+## 🔍 Part 1: Pre-Modelling EDA
+
+### Question 1: Pairwise Overview [CORE]
+
+Before running a regression model to predict `price`, we must check for linearity and collinearity among our predictors.
+
+**Task (a):** Use `GGally::ggpairs()` on the `diamonds_sample` dataset to plot the relationships between `price`, `carat`, `depth`, and `table`.
+```{r}
+#| eval: false
+diamonds_sample %>%
+  select(___, ___, ___, ___) %>%
+  ___() +
+  labs(title = "Pairwise relationships in diamonds")
+```
+
+**Task (b) (Local Interpretation):** Are there any pairs of predictors that show strong collinearity (correlation > 0.8)? Which predictor holds the strongest linear relationship with `price`?
+
+
+### Question 2: The Pivot Trick [RECOMMENDED]
+
+If you solely want to check the linearity of multiple predictors against the response variable without cluttering the screen with density plots, the `pivot_longer()` trick is your friend.
+
+**Task (a):** Select `price`, `carat`, `depth`, and `table` from `diamonds_sample`. Pivot all columns EXCEPT `price` into a long format. Then, create a faceted scatterplot (`facet_wrap`) with the predictor value on the x-axis and `price` on the y-axis. Add a linear trend line with `geom_smooth(method = "lm")`. Remember to use `scales = "free_x"`.
+```{r}
+#| eval: false
+diamonds_sample %>%
+  select(___) %>%
+  pivot_longer(
+    cols = c(___),
+    names_to = "predictor",
+    values_to = "value"
+  ) %>%
+  ggplot(aes(x = ___, y = ___)) +
+  geom_point(alpha = 0.4) +
+  geom_smooth(method = "lm", se = FALSE, colour = "red") +
+  ____(~ predictor, scales = "free_x") +
+  labs(title = "Linearity check: Price against predictors",
+       x = "Predictor Value",
+       y = "Price (USD)")
+```
+
+**Task (b) (Local Interpretation):** Comment on the shape of the `carat` relationship versus the `depth` relationship.
+
+
+## 📊 Part 2: Structure and Polish
+
+### Question 3: Meaningful Order [CORE]
+
+Alphabetical ordering is a common trap. When plotting categorical data, order matters!
+
+**Task (a):** Calculate the average `price` for each `clarity` category using the full `diamonds` dataset.
+```{r}
+#| eval: false
+avg_price_clarity <- diamonds %>%
+  group_by(___) %>%
+  summarise(avg_price = ___, .groups = "drop")
+```
+
+**Task (b):** Build a column chart (`geom_col`) showing `avg_price` by `clarity`. Crucially, use `fct_reorder()` to sort the bars from lowest to highest average price.
+```{r}
+#| eval: false
+ggplot(avg_price_clarity, aes(x = fct_reorder(___, ___), y = ___)) +
+  geom_col(fill = "steelblue") +
+  labs(title = "Average Diamond Price by Clarity",
+       x = "Clarity",
+       y = "Average Price (USD)") +
+  coord_flip()
+```
+
+**Task (c) (Local Interpretation):** Is there anything surprising about this ranking? Look up the `?diamonds` help file to see what the clarity categories mean.
+
+
+### Question 4: Data-to-ink Ratio [RECOMMENDED]
+
+**Task (a):** Take your code from Question 3(b) and apply `theme_classic()`.
+```{r}
+#| eval: false
+# Copy code from 3(b) and append theme_classic()
+___
+```
+
+
+### Question 5: Small Multiples with `facet_grid()` [CORE]
+
+**Task (a):** Create a scatter plot of `carat` (x-axis) vs `price` (y-axis) using `diamonds_sample`. Use `facet_grid()` to split the plot by two variables: `cut` (rows) and `color` (columns). 
+```{r}
+#| eval: false
+ggplot(diamonds_sample, aes(x = ___, y = ___)) +
+  geom_point(alpha = 0.5) +
+  ____(cut ~ color) +
+  labs(title = "Price vs Carat faceted by Cut and Color",
+       x = "Carat", y = "Price (USD)")
+```
+
+**Task (b) (Local Interpretation):** What does this dense grid of plots help you quickly deduce about the sample distribution across `cut` and `color`?
+
+
+## 🎨 Part 3: Colour Theory
+
+### Question 6: Qualitative Palettes [RECOMMENDED]
+
+**Task:** Create a boxplot of `price` grouping by `cut`. Map `cut` to the `fill` aesthetic, and apply the qualitative `"Set2"` palette from RColorBrewer using `scale_fill_brewer()`.
+```{r}
+#| eval: false
+ggplot(diamonds, aes(x = cut, y = price, fill = ___)) +
+  ___() +
+  ____(palette = "Set2") +
+  labs(title = "Price Distribution by Cut",
+       x = "Cut", y = "Price (USD)") +
+  theme_minimal()
+```
+
+
+### Question 7: Sequential Palettes [RECOMMENDED]
+
+**Task:** First, calculate the average `carat` grouped by `cut` and `color`. Then, create a tile plot (`geom_tile`) where x = `color`, y = `cut`, and fill = `avg_carat`. Use `scale_fill_viridis_c()` to apply a colourblind-safe sequential palette.
+```{r}
+#| eval: false
+carat_heatmap <- diamonds %>%
+  group_by(___, ___) %>%
+  summarise(avg_carat = mean(___), .groups = "drop")
+
+ggplot(carat_heatmap, aes(x = color, y = cut, fill = avg_carat)) +
+  ___(colour = "white", linewidth = 1) +
+  ____() +
+  labs(title = "Average Carat by Cut and Color",
+       x = "Color", y = "Cut", fill = "Avg Carat") +
+  theme_minimal()
+```
+
+
+### Question 8: AI Prompt Design 1 [RECOMMENDED]
+
+**Task (a):** Design a prompt to instruct an AI tool to generate a scatterplot of `carat` versus `price` using `diamonds_sample`, where points are coloured by `depth`. Specifically, ask the AI to map the continuous colour scale to a reverse `viridis` palette. 
+
+
+**Task (b):** Run your prompt through an AI tool of your choice or write the solution by hand below. 
+```{r}
+#| eval: false
+# Your code here
+```
+
+**Note:** AI models are always changing, so the exact output you see may differ from this solution. Always verify AI-generated code by running it and checking the output.
+
+
+### Question 9: Diverging Palettes and Residuals [CORE]
+
+**Task (a):** Fit a linear model predicting `price` using `carat` on the `diamonds_sample` dataset. Extract the fitted values and residuals into a new tibble called `diag_data`.
+```{r}
+#| eval: false
+mod <- lm(___ ~ ___, data = diamonds_sample)
+diag_data <- tibble(
+  fitted = mod$___,
+  residual = ___(mod)
+)
+```
+
+**Task (b):** Plot `residual` against `fitted` as a scatterplot. Add a dashed red zero-line using `geom_hline()`. Map the `colour` of the points to the `residual` value, and use `scale_colour_gradient2()` with a midpoint of 0 to create a diverging palette (e.g. blue for negative, red for positive, grey for zero).
+```{r}
+#| eval: false
+ggplot(diag_data, aes(x = fitted, y = residual, colour = ___)) +
+  geom_point(alpha = 0.6) +
+  ___(yintercept = 0, linetype = "dashed", colour = "black") +
+  ____(low = "steelblue", mid = "grey80",
+                         high = "firebrick", midpoint = 0) +
+  labs(title = "Residual Diagnostics: Price ~ Carat",
+       x = "Fitted Values", y = "Residuals")
+```
+
+**Task (c) (Local Interpretation):** Is the variance of the residuals roughly constant, or do the residuals demonstrate heteroscedasticity?
+
+
+## 🖋️ Part 4: Annotations and Diagnostics
+
+### Question 10: AI Debugging 1 (Themes and Ordering) [RECOMMENDED]
+
+I asked an AI: `"Create a bar chart of average price by clarity using the diamonds dataset. Make sure the bars are ordered so that the clarity with the highest price is at the top. Use a black and white theme and a qualitative ColorBrewer palette."`
+
+Here is what the AI returned:
+```r
+diamonds %>%
+  group_by(clarity) %>%
+  summarise(avg_price = mean(price), .groups = "drop") %>%
+  ggplot(aes(x = clarity, y = avg_price)) +
+  geom_col() +
+  scale_fill_brewer(palette = "Set2") +
+  theme_black_and_white() +
+  coord_flip()
+```
+
+**Task (a):** Identify all the bugs or missing features in the code above and fix them below.
+
+```{r}
+#| eval: false
+# Fix the broken AI code here
+```
+
+### Question 11: Direct Labelling with `geom_text` [RECOMMENDED]
+
+Let us switch to the `txhousing` dataset to look at real estate markets in Texas.
+
+**Task (a):** Identify the top 10 cities by highest average sales volume (ignoring NAs). Save this to `top_tx`.
+```{r}
+#| eval: false
+top_tx <- txhousing %>%
+  group_by(___) %>%
+  summarise(
+    avg_volume = mean(___, na.rm = TRUE),
+    avg_sales = mean(___, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(___)) %>%
+  slice_head(n = 10)
+```
+
+**Task (b):** Create a scatter plot of `avg_volume` vs `avg_sales` for these top 10 cities. Add a text label using `geom_text()` mapped to the `city` name.
+```{r}
+#| eval: false
+ggplot(top_tx, aes(x = avg_volume, y = avg_sales)) +
+  geom_point() +
+  ___(aes(label = ___)) +
+  labs(title = "Top 10 Texas Cities by Real Estate Volume")
+```
+
+
+### Question 12: Taming Clutter with ggrepel [RECOMMENDED]
+
+**Task:** The labels in the previous plot likely overlapped and were hard to read. Recreate the plot, but replace `geom_text()` with `geom_label_repel()` from the `ggrepel` package.
+```{r}
+#| eval: false
+ggplot(top_tx, aes(x = avg_volume, y = avg_sales)) +
+  geom_point() +
+  ___(aes(label = city)) +
+  labs(title = "Top 10 Texas Cities by Real Estate Volume (ggrepel)",
+       x = "Average Volume", y = "Average Sales")
+```
+
+
+### Question 13: Exporting Plots [RECOMMENDED]
+
+**Task:** Export the plot from Question 12 as a high-quality PNG image named `tx_housing_report.png` using `ggsave()`. Specify a width of 8 inches, height of 5 inches, and a dpi of 300. (Save the plot as an object `p_tx` first, then supply it to `ggsave`).
+```{r}
+#| eval: false
+p_tx <- ggplot(top_tx, aes(x = avg_volume, y = avg_sales)) +
+  geom_point() +
+  geom_label_repel(aes(label = city)) +
+  labs(title = "Top 10 Texas Cities by Real Estate Volume (ggrepel)",
+       x = "Average Volume", y = "Average Sales")
+
+___(_________)
+```
+
+
+### Question 14: AI Debugging 2 (Faceting and Palettes) [RECOMMENDED]
+
+I asked an AI: `"Please create a faceted scatterplot using the diamonds dataset comparing carat against price. I want to facet the chart in a grid structure splitting by color and cut, and I want the points to be coloured by clarity using a sequential palette."`
+
+Here is what the AI returned:
+```r
+ggplot(diamonds, aes(x = carat, y = price, filter = clarity)) +
+  geom_point() +
+  facet_wrap(color ~ cut) +
+  scale_color_distiller(palette = "YlOrRd")
+```
+
+**Task (a):** Identify all the bugs or missing features in the code above and fix them below.
+
+```{r}
+#| eval: false
+# Fix the broken AI code here
+```
+
+## 📝 Part 5: Past Exam Practice
+
+### Question 15: Interpreting the Linear Model [RECOMMENDED]
+
+*This question tests your ability to interpret linear models and diagnostic plots, typical of final exam conditions. You model arrival delay (minutes) using departure delay (minutes), distance (km), and carrier (Alpha, Bravo, Charlie).*
+
+```r
+Call: lm(formula = arr_delay ~ dep_delay + distance + carrier, data = dat)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-18.814  -5.546  -0.868   5.346  23.123 
+
+Coefficients:
+                 Estimate Std. Error t value Pr(>|t|)    
+(Intercept)    -1.2501887  1.4797721  -0.845   0.3991    
+dep_delay       0.5071110  0.0283164  17.909  < 2e-16 ***
+distance        0.0032559  0.0006559   4.964 1.33e-06 ***
+carrierBravo    4.3158988  1.3059544   3.305   0.0011 ** 
+carrierCharlie -1.3716415  1.3048535  -1.051   0.2943    
+```
+
+**Task (a):** Write the model in words. Specify the response, the predictors, and the reference carrier.
+
+
+**Task (b):** Interpret the coefficient of `dep_delay` in context (units and meaning). Your answer should state what happens to the expected arrival delay when departure delay increases by 1 minute, holding other variables constant.
+
+
+**Task (c):** Interpret the coefficient for `carrierBravo`. What does it tell you about the carrier Bravo relative to the carrier Alpha, all else equal? Is the difference statistically significant at the 5% level?
+
+
+**Task (d):** Predict how much delay (or early arrival) a flight will be to the nearest minute based on the following characteristics: The carrier is Alpha. The plane departed on time (0 minutes departure delay). The flight is a 1000km journey.
+
+
+**Task (e):** Look at the diagnostic plot below. Argue whether a linear model is appropriate, making reference to specific observations about the Residuals vs Fitted plot.
+
+![Four standard regression diagnostic plots: Residuals vs Fitted, Q-Q Residuals, Scale-Location, and Residuals vs Leverage](../Exam_2025S2/Q32_residual_plot.png)
+
+
+## 🚀 Part 6: Extension Challenges
+
+### Question 16: Investigating Simpson's Paradox [EXTENSION]
+
+**Task:** Create a scatterplot of `carat` on the x-axis and `price` on the y-axis, but this time apply a smooth trend line (`geom_smooth`) colored by `clarity`. What do you notice about how the average lines cross or shift? Explain how adding `clarity` might resolve confounding variables (e.g. Simpson's paradox) mentioned in Question 3.
+```{r}
+#| eval: false
+# Your code here
+```
+
+### Question 17: Multi-layer Data Art [EXTENSION]
+
+**Task:** Recreate a highly polished, Tufte-style minimalist line chart tracking `sales` over `date` grouped by `city` across the whole `txhousing` dataset. Mute all cities into grey background lines, but highlight specifically "Dallas" in bold blue.
+```{r}
+#| eval: false
+# Your code here
+```

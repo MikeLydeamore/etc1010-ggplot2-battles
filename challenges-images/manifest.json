@@ -24,6 +24,48 @@
     "image": ["barcharts-4.png"]
   },
   {
+    "name": ["colour-1"],
+    "title": ["Qualitative Palettes"],
+    "category": ["Week 6 Part 3: Colour Theory"],
+    "image": ["colour-1.png"]
+  },
+  {
+    "name": ["colour-2"],
+    "title": ["Sequential Palettes"],
+    "category": ["Week 6 Part 3: Colour Theory"],
+    "image": ["colour-2.png"]
+  },
+  {
+    "name": ["colour-3"],
+    "title": ["Diverging Palettes and Residuals"],
+    "category": ["Week 6 Part 3: Colour Theory"],
+    "image": ["colour-3.png"]
+  },
+  {
+    "name": ["eda-1"],
+    "title": ["Linearity and Collinearity"],
+    "category": ["Week 6 Part 1: Pre-Modelling EDA"],
+    "image": ["eda-1.png"]
+  },
+  {
+    "name": ["eda-2"],
+    "title": ["The Pivot Trick"],
+    "category": ["Week 6 Part 1: Pre-Modelling EDA"],
+    "image": ["eda-2.png"]
+  },
+  {
+    "name": ["eda-3"],
+    "title": ["Structure and Polish"],
+    "category": ["Week 6 Part 1: Pre-Modelling EDA"],
+    "image": ["eda-3.png"]
+  },
+  {
+    "name": ["eda-4"],
+    "title": ["Small Multiples with `facet_grid()`"],
+    "category": ["Week 6 Part 1: Pre-Modelling EDA"],
+    "image": ["eda-4.png"]
+  },
+  {
     "name": ["scatterplots-1"],
     "title": ["The ggplot canvas and points"],
     "category": ["Part 1: Scatterplots and Aesthetics"],
